@@ -1,0 +1,12 @@
+{
+  "name": "geographic_pin_map",
+  "version": "1.0.0",
+  "description": "This project is meant to demonstrate my skills with 3rd party libraries.  In order to do this and meet my goals of pushing myself to create something new, I am creating a Geographic Pin Map.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "William Owen <william.owen.dev@gmail.com>",
+  "license": "ISC"
+}
