@@ -21,13 +21,15 @@
     .scale(300)
     .translate([width / 2, height / 2])
     .clipAngle(90)
+
   // Create a blue circle behind the earth.
-  svg
+  const backgroundCircle = svg
     .append('circle')
     .attr('cx', width / 2)
     .attr('cy', height / 2)
     .attr('r', projection.scale())
     .attr('fill', 'blue')
+
   // Define a path generator.
   const path = d3.geoPath().projection(projection)
 
@@ -44,20 +46,36 @@
       .attr('d', path)
       .attr('fill', '#69b3a2')
       .attr('stroke', '#fff')
+
+    // Define the coordinates for the dot (San Francisco).
+    const coordinates = [-122.4194, 37.7749]
+
+    // Project the coordinates.
+    const [x, y] = projection(coordinates)
+
+    // Add the dot.
+    const dot = svg
+      .append('circle')
+      .attr('cx', x)
+      .attr('cy', y)
+      .attr('r', 5)
+      .attr('fill', 'red')
+
+    // Set up rotation parameters.
+    let rotate = [0, 0]
+    const velocity = 0.1
+
+    // Function to update the rotation.
+    function updateRotation() {
+      rotate[0] += velocity
+      projection.rotate(rotate)
+      svg.selectAll('path').attr('d', path)
+      const [newX, newY] = projection(coordinates)
+      dot.attr('cx', newX).attr('cy', newY)
+      requestAnimationFrame(updateRotation)
+    }
+
+    // Start the rotation.
+    updateRotation()
   })
-
-  // Set up rotation parameters.
-  let rotate = [0, 0]
-  const velocity = 0.02
-
-  // Function to update the rotation.
-  function updateRotation() {
-    rotate[0] += velocity
-    projection.rotate(rotate)
-    svg.selectAll('path').attr('d', path)
-    requestAnimationFrame(updateRotation)
-  }
-
-  // Start the rotation.
-  updateRotation()
 </script>
