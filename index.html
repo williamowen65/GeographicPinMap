@@ -71,7 +71,8 @@
       projection.rotate(rotate)
       svg.selectAll('path').attr('d', path)
       const [newX, newY] = projection(coordinates)
-      dot.attr('cx', newX).attr('cy', newY)
+      const isVisible = projection.clipAngle() * (Math.PI / 180) > d3.geoDistance(coordinates, projection.invert([width / 2, height / 2]))
+      dot.attr('cx', newX).attr('cy', newY).attr('display', isVisible ? 'block' : 'none')
       requestAnimationFrame(updateRotation)
     }
 
