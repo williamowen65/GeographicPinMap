@@ -33,9 +33,12 @@ io.on('connection', (socket) => {
     socket.on('newLocation', (location) => {
         // attach socketId to location
         location.socketId = socket.id;
-        locations[socket.id] = location;
+        if(locations[socket.id]) {
+        } else {
+            io.emit('broadcastLocation', location);
+            locations[socket.id] = location;
+        }
         // locations.push(location);
-        io.emit('broadcastLocation', location);
         console.log('New location added', { locations })
     });
 
