@@ -56,6 +56,15 @@
     addDot(location)
   })
 
+  socket.on('removeLocation', (location) => {
+    console.log("Removing a location because the server told us to", {location})
+    const index = dots.findIndex((dot) => dot.coordinates[0] === location[0] && dot.coordinates[1] === location[1])
+    if (index > -1) {
+      dots[index].dot.remove()
+      dots.splice(index, 1)
+    }
+  })
+
   // Declare the chart dimensions and margins.
   // const width = 960
   // const height = 600

@@ -26,13 +26,23 @@ io.on('connection', (socket) => {
 
   // Listen for new locations from clients
   socket.on('newLocation', (location) => {
+    // attach socketId to location
+    location.socketId = socket.id;
     locations.push(location);
     io.emit('broadcastLocation', location);
+
+    console.log('New location added', {locations})
   });
 
   socket.on('disconnect', () => {
-    locations = locations.filter(loc => loc.socketId !== socket.id);
-    console.log('Client disconnected');
+
+    locations = locations.filter(loc => {
+        if(loc.socketId === socket.id) {
+            io.emit('removeLocation', loc);
+        }
+        return loc.socketId !== socket.id
+    });
+    console.log('Client disconnected', {locations, socketId: socket.id});
   });
 });
 
