@@ -5,29 +5,56 @@
       font-family: 'Arial', sans-serif;
       margin: 0;
       padding: 0;
+      background-color: rgb(13 13 64);
     }
-    #container {
+    #geographic-pin-map #svg-container {
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh; /* Full viewport height */
     }
-    svg {
+    #geographic-pin-map svg {
       max-width: 100%;
       height: auto;
     }
+    #geographic-pin-map h1 {
+      color: white;
+      text-align: center;
+    }
+    #geographic-pin-map header {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    #geographic-pin-map .svg-container{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
   </style>
 </head>
-<div id="container"></div>
+<div id="geographic-pin-map">
+  <header>
+    <h1>Geographic Pin Map</h1>
+    <button id="svg-share-location">Add Location</button>
+  </header>
+  <div id="svg-container"></div>
+  <div class="subCaption">
+    There are ${viewerCount} people viewing this page and ${locationCount} have
+    shared their locations
+  </div>
+</div>
 <script src="/socket.io/socket.io.js"></script>
 <script type="module">
   import * as d3 from 'https://cdn.jsdelivr.net/npm/d3@7/+esm'
 
-  const container = d3.select('#container')
-  const width = container.node().getBoundingClientRect().width
-  const height = container.node().getBoundingClientRect().height
+  const svgContainer = d3.select('#svg-container')
+  const width = svgContainer.node().getBoundingClientRect().width
+  const height = svgContainer.node().getBoundingClientRect().height
+  console.log({width, height})
 
-  let subtextCaption;
+  let subtextCaption
 
   const socket = io()
   const dots = []
@@ -61,8 +88,6 @@
   let viewerCount = 0
   let locationCount = 0
 
- 
-
   // Handle initial locations from the server
   socket.on('initialLocations', (locations) => {
     Object.values(locations).forEach((location) =>
@@ -72,11 +97,11 @@
     locationCount = Object.keys(locations).length
   })
 
-  socket.on("emitViewerCount", (count) => {
+  socket.on('emitViewerCount', (count) => {
     viewerCount = count
-    console.log("viewer count", count)
-   setTimeout(() => updateCaption(), 100)
-  })  
+    console.log('viewer count', count)
+    setTimeout(() => updateCaption(), 100)
+  })
 
   // Handle new locations broadcasted by the server
   socket.on('broadcastLocation', (location) => {
@@ -102,29 +127,56 @@
   // const width = 960
   // const height = 600
 
-  // Create the SVG container.
+
+
+  // Create the SVG svg-container.
   const svg = d3
-    .select('#container')
+    .select('#svg-container')
     .append('svg')
-    .attr('width', '100%')
+    .attr('width', '500px')
     .attr('height', '100vh')
-    .style('background-color', 'rgb(13 13 64)')
+  // .attr("width", '100vw')
+  // .attr("height", '80vh')
+  // .attr('viewBox', `0 0 ${Math.min(window.innerWidth, window.innerHeight)} ${Math.min(window.innerWidth, window.innerHeight)}`);
+
+  // // on window resize, update the svg viewBox
+  // window.addEventListener('resize', () => {
+  //   svg.attr('viewBox', `0 0 ${Math.min(window.innerWidth, window.innerHeight)} ${Math.min(window.innerWidth, window.innerHeight)}`);
+  // });
+
+  // .attr('viewBox','0 0 1000 1000')
+  // .attr('preserveAspectRatio','xMinYMin')
+  // .style('background-color', 'rgb(13 13 64)')
+
   // .style('padding-top', '60px')
   // .style('padding-bottom', '60px')
+
+  /*
+  var svg = d3.select('.chart-svg-container').append("svg")
+    .attr("width", '100%')
+    .attr("height", '100%')
+    .attr('viewBox','0 0 '+Math.min(width,height)+' '+Math.min(width,height))
+    .attr('preserveAspectRatio','xMinYMin')
+    .append("g")
+    .attr("transform", "translate(" + Math.min(width,height) / 2 + "," + Math.min(width,height) / 2 + ")");
+  */
+
+  const svgWidth = svg.node().getBoundingClientRect().width
+  const svgHeight = svg.node().getBoundingClientRect().height
 
   // Define a projection with a -30 degree rotation.
   const projection = d3
     .geoOrthographic()
-    .scale(Math.min(width, height) / 2 - 100)
+    .scale(Math.min(svgWidth, svgHeight) / 2 - 100)
     .clipAngle(90)
     .rotate([30, 0]) // Rotate the earth by -30 degrees
-    .translate([width / 2, height / 2 + 0])
+    .translate([svgWidth / 2, svgHeight / 2])
 
   // Create a light light blue circle behind the earth.
   const backgroundCircle = svg
     .append('circle')
-    .attr('cx', width / 2)
-    .attr('cy', height / 2 + 0)
+    .attr('cx', svgWidth / 2)
+    .attr('cy', svgHeight / 2 + 0)
     .attr('r', projection.scale())
     .attr('fill', '#E0F7FA') // Ocean color
 
@@ -149,19 +201,19 @@
       .append('title')
       .text((d) => d.properties.name)
 
-    // Add a button to the SVG container.
-    const button = svg
-      .append('foreignObject')
-      .attr('x', width - 150)
-      .attr('y', 20)
-      .attr('width', 130)
-      .attr('height', 40)
-      .append('xhtml:div')
-      .append('button')
-      .attr('id', 'svg-share-location')
-      .style('width', '100%')
-      .style('height', '100%')
-      .text('Add Location')
+    // Add a button to the SVG svg-container.
+    // const button = svg
+    //   .append('foreignObject')
+    //   .attr('x', width - 150)
+    //   .attr('y', 20)
+    //   .attr('width', 130)
+    //   .attr('height', 40)
+    //   .append('xhtml:div')
+    //   .append('button')
+    //   .attr('id', 'svg-share-location')
+    //   .style('width', '100%')
+    //   .style('height', '100%')
+    //   .text('Add Location')
 
     // Add event listener to the new button.
     document
@@ -216,34 +268,33 @@
     updateRotation()
 
     // Add text above the earth
-    svg
-      .append('text')
-      .attr('x', width / 2)
-      .attr('y', 40)
-      .attr('text-anchor', 'middle')
-      .attr('font-size', '24px')
-      .attr('fill', 'white')
-      .text('Geographic Pin Map')
+    // svg
+    //   .append('text')
+    //   .attr('x', width / 2)
+    //   .attr('y', 40)
+    //   .attr('text-anchor', 'middle')
+    //   .attr('font-size', '24px')
+    //   .attr('fill', 'white')
+    //   .text('Geographic Pin Map')
 
-    // Add text below the earth
-    subtextCaption = svg
-      .append('text')
-      .attr('x', width / 2)
-      .attr('y', height - 20)
-      .attr('text-anchor', 'middle')
-      .attr('font-size', '16px')
-      .attr('fill', 'white')
+    // // Add text below the earth
+    // subtextCaption = svg
+    //   .append('text')
+    //   .attr('x', width / 2)
+    //   .attr('y', height - 20)
+    //   .attr('text-anchor', 'middle')
+    //   .attr('font-size', '16px')
+    //   .attr('fill', 'white')
 
     updateCaption()
   })
 
   function updateCaption() {
-    console.log('updateCaption', { viewerCount, locationCount })
-    if(subtextCaption){
-
-      subtextCaption.text(
-        `There are ${viewerCount} people viewing this page and ${locationCount} have shared their locations`
-      )
-    }
+    // console.log('updateCaption', { viewerCount, locationCount })
+    // if(subtextCaption){
+    //   subtextCaption.text(
+    //     `There are ${viewerCount} people viewing this page and ${locationCount} have shared their locations`
+    //   )
+    // }
   }
 </script>

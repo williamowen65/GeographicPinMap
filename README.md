@@ -33,5 +33,14 @@ Somewhere between simple to complex, my project follows a few specific steps but
 - Figure out how to rotate it. 
 - Add button to add location to the map.
 
-
 When the map if done and deployed... I'll add an iframe right here, so you can try it from this README!
+
+---
+
+Notes on progress:  
+
+> The initial setup of Earth and a dot took surprisingly little time thanks to CoPilot.  
+> In order to complete the work hours requirement I am adding another library to this project.   
+> That library is 'Socket.io' for a real time connection for sharing location over the map  
+> And also the Express library is used to serve content.   
+ 
