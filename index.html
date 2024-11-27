@@ -46,20 +46,38 @@
       .attr('d', path)
       .attr('fill', '#69b3a2')
       .attr('stroke', '#fff')
+    const dots = []
+    const coordinates = [[-122.4194, 37.7749]]
+    const additionalCoordinates = [
+      [2.3522, 48.8566], // Paris
+      [139.6917, 35.6895], // Tokyo
+      [151.2093, -33.8688], // Sydney
+      [12.4964, 41.9028], // Rome
+      [77.209, 28.6139], // New Delhi
+      [-120.7401, 47.7511], // Washington State
+      [-122.3321, 47.6062], // Seattle
+      [-122.6765, 45.5234], // Portland
+      [-117.426, 47.6588], // Spokane
+    ]
 
-    // Define the coordinates for the dot (San Francisco).
-    const coordinates = [-122.4194, 37.7749]
+    coordinates.push(...additionalCoordinates)
 
-    // Project the coordinates.
-    const [x, y] = projection(coordinates)
+    coordinates.forEach(addDot)
 
-    // Add the dot.
-    const dot = svg
-      .append('circle')
-      .attr('cx', x)
-      .attr('cy', y)
-      .attr('r', 5)
-      .attr('fill', 'red')
+    function addDot(coordinates) {
+      // Project the coordinates.
+      const [x, y] = projection(coordinates)
+
+      // Add the dot.
+      const dot = svg
+        .append('circle')
+        .attr('cx', x)
+        .attr('cy', y)
+        .attr('r', 5)
+        .attr('fill', 'red')
+
+      dots.push({ dot, coordinates })
+    }
 
     // Set up rotation parameters.
     let rotate = [0, 0]
@@ -70,9 +88,21 @@
       rotate[0] += velocity
       projection.rotate(rotate)
       svg.selectAll('path').attr('d', path)
-      const [newX, newY] = projection(coordinates)
-      const isVisible = projection.clipAngle() * (Math.PI / 180) > d3.geoDistance(coordinates, projection.invert([width / 2, height / 2]))
-      dot.attr('cx', newX).attr('cy', newY).attr('display', isVisible ? 'block' : 'none')
+      console.log({ dots })
+      dots.forEach(({ coordinates, dot }) => {
+        console.log({ coordinates, dot })
+        const [newX, newY] = projection(coordinates)
+        const isVisible =
+          projection.clipAngle() * (Math.PI / 180) >
+          d3.geoDistance(
+            coordinates,
+            projection.invert([width / 2, height / 2])
+          )
+        dot
+          .attr('cx', newX)
+          .attr('cy', newY)
+          .attr('display', isVisible ? 'block' : 'none')
+      })
       requestAnimationFrame(updateRotation)
     }
 
