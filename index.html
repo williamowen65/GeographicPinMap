@@ -1,7 +1,36 @@
 <!DOCTYPE html>
 <div id="container"></div>
+<script src="/socket.io/socket.io.js"></script>
 <script type="module">
   import * as d3 from 'https://cdn.jsdelivr.net/npm/d3@7/+esm'
+
+  const socket = io()
+  const dots = []
+  function addDot(coordinates) {
+      // Project the coordinates.
+      const [x, y] = projection(coordinates)
+
+      // Add the dot.
+      const dot = svg
+        .append('circle')
+        .attr('cx', x)
+        .attr('cy', y)
+        .attr('r', 5)
+        .attr('fill', '#0d3271') // Dot color
+      // .attr('fill', 'lightgreen') // Dot color
+
+      dots.push({ dot, coordinates })
+    }
+
+  // Handle initial locations from the server
+  socket.on('initialLocations', (locations) => {
+    locations.forEach((location) => setTimeout(() => addDot(location), 100))
+  })
+
+  // Handle new locations broadcasted by the server
+  socket.on('broadcastLocation', (location) => {
+    addDot(location)
+  })
 
   // Declare the chart dimensions and margins.
   const width = 960
@@ -13,7 +42,7 @@
     .append('svg')
     .attr('width', width)
     .attr('height', height)
-    .style('background-color', '#00008B')
+    .style('background-color', 'rgb(13 13 64)')
     .style('padding-top', '20px')
     .style('padding-bottom', '20px')
 
@@ -52,34 +81,39 @@
       .attr('stroke-width', 1)
       // Add country names
       .append('title')
-      .text(d => d.properties.name)
+      .text((d) => d.properties.name)
 
+    // Add a button to the SVG container.
+    const button = svg
+      .append('foreignObject')
+      .attr('x', width - 150)
+      .attr('y', 20)
+      .attr('width', 130)
+      .attr('height', 40)
+      .append('xhtml:div')
+      .append('button')
+      .attr('id', 'svg-share-location')
+      .style('width', '100%')
+      .style('height', '100%')
+      .text('Add Location')
 
-      // Add a button to the SVG container.
-      const button = svg
-        .append('foreignObject')
-        .attr('x', width - 150)
-        .attr('y', 20)
-        .attr('width', 130)
-        .attr('height', 40)
-        .append('xhtml:div')
-        .append('button')
-        .attr('id', 'svg-share-location')
-        .style('width', '100%')
-        .style('height', '100%')
-        .text('Add Location')
-
-      // Add event listener to the new button.
-      document.querySelector('#svg-share-location').addEventListener('click', () => {
+    // Add event listener to the new button.
+    document
+      .querySelector('#svg-share-location')
+      .addEventListener('click', () => {
         // prompt browser for location data
-        navigator.geolocation.getCurrentPosition(position => {
+        navigator.geolocation.getCurrentPosition((position) => {
           const { latitude, longitude } = position.coords
-          coordinates.push([longitude, latitude])
-          addDot([longitude, latitude])
+          const location = [longitude, latitude]
+          coordinates.push(location)
+          addDot(location)
+
+          // Send the new location to the server
+          socket.emit('newLocation', location)
         })
       })
 
-    const dots = []
+    
     const coordinates = [[-122.4194, 37.7749]]
     const additionalCoordinates = [
       [2.3522, 48.8566], // Paris
@@ -93,25 +127,9 @@
       [-117.426, 47.6588], // Spokane
     ]
 
-
     coordinates.forEach(addDot)
 
-    function addDot(coordinates) {
-      // Project the coordinates.
-      const [x, y] = projection(coordinates)
-
-      // Add the dot.
-      const dot = svg
-        .append('circle')
-        .attr('cx', x)
-        .attr('cy', y)
-        .attr('r', 5)
-        .attr('fill', '#0d3271') // Dot color
-        // .attr('fill', 'lightgreen') // Dot color
-
-
-      dots.push({ dot, coordinates })
-    }
+    
 
     // Set up rotation parameters.
     let rotate = [0, 0]
@@ -124,9 +142,9 @@
       rotate[0] += velocity
       projection.rotate([rotate[0], -30])
       svg.selectAll('path').attr('d', path)
-      console.log({ dots })
+      // console.log({ dots })
       dots.forEach(({ coordinates, dot }) => {
-        console.log({ coordinates, dot })
+        // console.log({ coordinates, dot })
         const [newX, newY] = projection(coordinates)
         const isVisible =
           projection.clipAngle() * (Math.PI / 180) >
@@ -146,3 +164,4 @@
     updateRotation()
   })
 </script>
+

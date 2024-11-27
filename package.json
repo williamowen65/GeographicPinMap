@@ -8,5 +8,9 @@
   },
   "keywords": [],
   "author": "William Owen <william.owen.dev@gmail.com>",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.1",
+    "socket.io": "^4.8.1"
+  }
 }
