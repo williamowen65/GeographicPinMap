@@ -6,7 +6,14 @@ const cors = require('cors');
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server);
+const io = socketIo(server,
+    {
+        cors: {
+            origin: "https://geographic-pin-map.vercel.app",
+            methods: ["GET", "POST"]
+        }
+    }
+);
 
 const PORT = process.env.PORT || 3000;
 
@@ -33,7 +40,7 @@ io.on('connection', (socket) => {
     socket.on('newLocation', (location) => {
         // attach socketId to location
         location.socketId = socket.id;
-        if(locations[socket.id]) {
+        if (locations[socket.id]) {
         } else {
             io.emit('broadcastLocation', location);
             locations[socket.id] = location;
