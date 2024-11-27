@@ -47,7 +47,7 @@
   </header>
   <div id="svg-container"></div>
   <div class="subCaption">
-    There are ${viewerCount} people viewing this page and ${locationCount} have
+    There are <span class="viewerCount"></span> people viewing this page and <span class="locationCount"></span> have
     shared their locations
   </div>
 </div>
@@ -112,6 +112,8 @@
   // Handle new locations broadcasted by the server
   socket.on('broadcastLocation', (location) => {
     addDot(location)
+    locationCount++
+    updateCaption()
   })
 
   socket.on('removeLocation', (location) => {
@@ -125,6 +127,7 @@
     if (index > -1) {
       dots[index].dot.remove()
       dots.splice(index, 1)
+      locationCount--;
       updateCaption()
     }
   })
@@ -297,7 +300,18 @@
   })
 
   function updateCaption() {
-    // console.log('updateCaption', { viewerCount, locationCount })
+    console.log('updateCaption', { viewerCount, locationCount })
+
+    const viewerCountSpan = document.querySelector('.viewerCount')
+    const locationCountSpan = document.querySelector('.locationCount')
+
+    if (viewerCountSpan) {
+      viewerCountSpan.textContent = viewerCount
+    }
+    if (locationCountSpan) {
+      locationCountSpan.textContent = locationCount
+    }
+
     // if(subtextCaption){
     //   subtextCaption.text(
     //     `There are ${viewerCount} people viewing this page and ${locationCount} have shared their locations`
