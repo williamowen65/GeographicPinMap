@@ -11,7 +11,8 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh; /* Full viewport height */
+      margin-top: 20px;;
+      /* height: 100vh; Full viewport height */
     }
     #geographic-pin-map svg {
       max-width: 100%;
@@ -31,6 +32,11 @@
       display: flex;
       justify-content: center;
       align-items: center;
+    }
+    #geographic-pin-map .subCaption {
+      color: white;
+      text-align: center;
+      margin-top: 20px;
     }
   </style>
 </head>
@@ -134,7 +140,8 @@
     .select('#svg-container')
     .append('svg')
     .attr('width', '500px')
-    .attr('height', '100vh')
+    .attr('height', '500px')
+    .attr('viewBox', '100 100 300 300')
   // .attr("width", '100vw')
   // .attr("height", '80vh')
   // .attr('viewBox', `0 0 ${Math.min(window.innerWidth, window.innerHeight)} ${Math.min(window.innerWidth, window.innerHeight)}`);
@@ -224,7 +231,7 @@
           const { latitude, longitude } = position.coords
           const location = [longitude, latitude]
           coordinates.push(location)
-          addDot(location)
+          // addDot(location) // The location will be double added because the server will also send it back to us
 
           // Send the new location to the server
           socket.emit('newLocation', location)
@@ -254,7 +261,7 @@
           projection.clipAngle() * (Math.PI / 180) >
           d3.geoDistance(
             coordinates,
-            projection.invert([width / 2, height / 2])
+            projection.invert([svgWidth / 2, svgHeight / 2])
           )
         dot
           .attr('cx', newX)
