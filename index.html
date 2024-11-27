@@ -7,15 +7,15 @@
       padding: 0;
     }
     #container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh; /* Full viewport height */
-  }
-  svg {
-    max-width: 100%;
-    height: auto;
-  }
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh; /* Full viewport height */
+    }
+    svg {
+      max-width: 100%;
+      height: auto;
+    }
   </style>
 </head>
 <div id="container"></div>
@@ -23,33 +23,60 @@
 <script type="module">
   import * as d3 from 'https://cdn.jsdelivr.net/npm/d3@7/+esm'
 
-  const container = d3.select('#container');
-  const width = container.node().getBoundingClientRect().width;
-  const height = container.node().getBoundingClientRect().height;
+  const container = d3.select('#container')
+  const width = container.node().getBoundingClientRect().width
+  const height = container.node().getBoundingClientRect().height
 
+  let subtextCaption;
 
   const socket = io()
   const dots = []
   function addDot(coordinates) {
-      // Project the coordinates.
-      const [x, y] = projection(coordinates)
+    // Project the coordinates.
+    const [x, y] = projection(coordinates)
 
-      // Add the dot.
-      const dot = svg
-        .append('circle')
-        .attr('cx', x)
-        .attr('cy', y)
+    // Add the dot.
+    const dot = svg
+      .append('circle')
+      .attr('cx', x)
+      .attr('cy', y)
+      .attr('r', 5)
+      .attr('fill', '#0d3271') // Dot color
+    // .attr('fill', 'lightgreen') // Dot color
+
+    setTimeout(() => {
+      dot
+        .transition()
+        .duration(1000)
+        .attr('r', 10)
+        .transition()
+        .duration(1000)
         .attr('r', 5)
-        .attr('fill', '#0d3271') // Dot color
-      // .attr('fill', 'lightgreen') // Dot color
-
+    }, 100)
+    setTimeout(() => {
       dots.push({ dot, coordinates })
-    }
+    }, 100)
+  }
+
+  let viewerCount = 0
+  let locationCount = 0
+
+ 
 
   // Handle initial locations from the server
   socket.on('initialLocations', (locations) => {
-    locations.forEach((location) => setTimeout(() => addDot(location), 100))
+    Object.values(locations).forEach((location) =>
+      setTimeout(() => addDot(location), 100)
+    )
+    console.log('Initial locations', { locations })
+    locationCount = Object.keys(locations).length
   })
+
+  socket.on("emitViewerCount", (count) => {
+    viewerCount = count
+    console.log("viewer count", count)
+   setTimeout(() => updateCaption(), 100)
+  })  
 
   // Handle new locations broadcasted by the server
   socket.on('broadcastLocation', (location) => {
@@ -57,11 +84,17 @@
   })
 
   socket.on('removeLocation', (location) => {
-    console.log("Removing a location because the server told us to", {location})
-    const index = dots.findIndex((dot) => dot.coordinates[0] === location[0] && dot.coordinates[1] === location[1])
+    console.log('Removing a location because the server told us to', {
+      location,
+    })
+    const index = dots.findIndex(
+      (dot) =>
+        dot.coordinates[0] === location[0] && dot.coordinates[1] === location[1]
+    )
     if (index > -1) {
       dots[index].dot.remove()
       dots.splice(index, 1)
+      updateCaption()
     }
   })
 
@@ -74,24 +107,24 @@
     .select('#container')
     .append('svg')
     .attr('width', '100%')
-    .attr('height', height)
+    .attr('height', '100vh')
     .style('background-color', 'rgb(13 13 64)')
-    .style('padding-top', '20px')
-    .style('padding-bottom', '20px')
+  // .style('padding-top', '60px')
+  // .style('padding-bottom', '60px')
 
   // Define a projection with a -30 degree rotation.
   const projection = d3
     .geoOrthographic()
-    .scale(Math.min(width, height) / 2 - 20)
-    .translate([width / 2, height / 2])
+    .scale(Math.min(width, height) / 2 - 100)
     .clipAngle(90)
     .rotate([30, 0]) // Rotate the earth by -30 degrees
+    .translate([width / 2, height / 2 + 0])
 
   // Create a light light blue circle behind the earth.
   const backgroundCircle = svg
     .append('circle')
     .attr('cx', width / 2)
-    .attr('cy', height / 2)
+    .attr('cy', height / 2 + 0)
     .attr('r', projection.scale())
     .attr('fill', '#E0F7FA') // Ocean color
 
@@ -146,23 +179,9 @@
         })
       })
 
-    
-    const coordinates = [[-122.4194, 37.7749]]
-    const additionalCoordinates = [
-      [2.3522, 48.8566], // Paris
-      [139.6917, 35.6895], // Tokyo
-      [151.2093, -33.8688], // Sydney
-      [12.4964, 41.9028], // Rome
-      [77.209, 28.6139], // New Delhi
-      [-120.7401, 47.7511], // Washington State
-      [-122.3321, 47.6062], // Seattle
-      [-122.6765, 45.5234], // Portland
-      [-117.426, 47.6588], // Spokane
-    ]
+    const coordinates = []
 
     coordinates.forEach(addDot)
-
-    
 
     // Set up rotation parameters.
     let rotate = [0, 0]
@@ -195,6 +214,36 @@
 
     // Start the rotation.
     updateRotation()
-  })
-</script>
 
+    // Add text above the earth
+    svg
+      .append('text')
+      .attr('x', width / 2)
+      .attr('y', 40)
+      .attr('text-anchor', 'middle')
+      .attr('font-size', '24px')
+      .attr('fill', 'white')
+      .text('Geographic Pin Map')
+
+    // Add text below the earth
+    subtextCaption = svg
+      .append('text')
+      .attr('x', width / 2)
+      .attr('y', height - 20)
+      .attr('text-anchor', 'middle')
+      .attr('font-size', '16px')
+      .attr('fill', 'white')
+
+    updateCaption()
+  })
+
+  function updateCaption() {
+    console.log('updateCaption', { viewerCount, locationCount })
+    if(subtextCaption){
+
+      subtextCaption.text(
+        `There are ${viewerCount} people viewing this page and ${locationCount} have shared their locations`
+      )
+    }
+  }
+</script>
