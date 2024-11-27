@@ -21,6 +21,7 @@
     .scale(300)
     .translate([width / 2, height / 2])
     .clipAngle(90)
+    .rotate([30, 0])
 
   // Create a blue circle behind the earth.
   const backgroundCircle = svg
@@ -81,12 +82,14 @@
 
     // Set up rotation parameters.
     let rotate = [0, 0]
-    const velocity = 0.1
+    const velocity = 0.4
+    // Set the initial rotation to match the natural angle of the earth.
+    // projection.rotate([0, -30])
 
     // Function to update the rotation.
     function updateRotation() {
       rotate[0] += velocity
-      projection.rotate(rotate)
+      projection.rotate([rotate[0], -30])
       svg.selectAll('path').attr('d', path)
       console.log({ dots })
       dots.forEach(({ coordinates, dot }) => {
