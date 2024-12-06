@@ -15,6 +15,7 @@ broadcast location data to all connected clients.
 
 
 <!DOCTYPE html>
+
 <head>
   <style>
     body {
@@ -23,32 +24,40 @@ broadcast location data to all connected clients.
       padding: 0;
       background-color: rgb(13 13 64);
     }
+
     #geographic-pin-map #svg-container {
       display: flex;
       justify-content: center;
       align-items: center;
-      margin-top: 20px;;
+      margin-top: 20px;
+      ;
+      height: 300px;
       /* height: 100vh; Full viewport height */
     }
+
     #geographic-pin-map svg {
       max-width: 100%;
-      height: auto;
+      height: 300px;
     }
+
     #geographic-pin-map h1 {
       color: white;
       text-align: center;
     }
+
     #geographic-pin-map header {
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
     }
-    #geographic-pin-map .svg-container{
+
+    #geographic-pin-map .svg-container {
       display: flex;
       justify-content: center;
       align-items: center;
     }
+
     #geographic-pin-map .subCaption {
       color: white;
       text-align: center;
@@ -70,19 +79,36 @@ broadcast location data to all connected clients.
 </div>
 
 <script type="module">
+  const logIf = {
+    size: false,
+    initialLocations: false,
+    updateViewerCount: false,
+    addingLocation: false,
+    removingLocation: false,
+  }
+
+  // Importing the D3.js library from a CDN and the Socket.io client library
   import * as d3 from 'https://cdn.jsdelivr.net/npm/d3@7/+esm'
   import { io } from "https://cdn.socket.io/4.8.1/socket.io.esm.min.js";
 
+  // Get the width and height of the svg-container
   const svgContainer = d3.select('#svg-container')
   const width = svgContainer.node().getBoundingClientRect().width
   const height = svgContainer.node().getBoundingClientRect().height
-  console.log({width, height})
+  logIf.size && console.log("The dimensions of the svg-container are:", { width, height })
 
-  let subtextCaption
+  // Variable to hold the subtext caption
+  let subtextCaption;
+
+  // Production and development endpoints for the Socket.io server
+  // It would be nice to automatically switch between these based on the environment
 
   // const socket = io("https://geographic-pin-map.vercel.app")
   const socket = io("localhost:5500")
+
+  // Array to hold the dots that represent the locations
   const dots = []
+  // Function to add a dot to the map (Called via socket.io broadcast) 
   function addDot(coordinates) {
     // Project the coordinates.
     const [x, y] = projection(coordinates)
@@ -110,33 +136,40 @@ broadcast location data to all connected clients.
     }, 100)
   }
 
+  // Initial counts for the viewer and location counts
   let viewerCount = 0
   let locationCount = 0
 
+
+  // Listening for websocket broadcast events
   // Handle initial locations from the server
   socket.on('initialLocations', (locations) => {
     Object.values(locations).forEach((location) =>
+      // Add a dot for each location (on load)
+      // Set timeout was a work around to make sure the dots are added after the map is loaded
       setTimeout(() => addDot(location), 100)
     )
-    console.log('Initial locations', { locations })
+    logIf.initialLocations && console.log('Initial locations', { locations })
     locationCount = Object.keys(locations).length
   })
 
+  // Handle viewer count broadcasted by the server
   socket.on('emitViewerCount', (count) => {
     viewerCount = count
-    console.log('viewer count', count)
+    logIf.updateViewerCount && console.log('viewer count', count)
     setTimeout(() => updateCaption(), 100)
   })
 
   // Handle new locations broadcasted by the server
   socket.on('broadcastLocation', (location) => {
+    logIf.addingLocation && console.log('Adding a location from socket.io', { location })
     addDot(location)
     locationCount++
     updateCaption()
   })
 
   socket.on('removeLocation', (location) => {
-    console.log('Removing a location because the server told us to', {
+   logIf.removingLocation && console.log('Removing a location because the server told us to', {
       location,
     })
     const index = dots.findIndex(
@@ -151,44 +184,22 @@ broadcast location data to all connected clients.
     }
   })
 
-  // Declare the chart dimensions and margins.
-  // const width = 960
-  // const height = 600
+  
 
 
-
-  // Create the SVG svg-container.
+  // Create the SVG svg-container and append it to the svg-container div.
   const svg = d3
     .select('#svg-container')
     .append('svg')
-    .attr('width', '500px')
-    .attr('height', '500px')
-    .attr('viewBox', '100 100 300 300')
-  // .attr("width", '100vw')
-  // .attr("height", '80vh')
-  // .attr('viewBox', `0 0 ${Math.min(window.innerWidth, window.innerHeight)} ${Math.min(window.innerWidth, window.innerHeight)}`);
+    // .attr('width', '50%')
+    .attr('viewBox', '150 150 100 100')
 
-  // // on window resize, update the svg viewBox
-  // window.addEventListener('resize', () => {
-  //   svg.attr('viewBox', `0 0 ${Math.min(window.innerWidth, window.innerHeight)} ${Math.min(window.innerWidth, window.innerHeight)}`);
-  // });
 
-  // .attr('viewBox','0 0 1000 1000')
-  // .attr('preserveAspectRatio','xMinYMin')
-  // .style('background-color', 'rgb(13 13 64)')
-
-  // .style('padding-top', '60px')
-  // .style('padding-bottom', '60px')
-
-  /*
-  var svg = d3.select('.chart-svg-container').append("svg")
-    .attr("width", '100%')
-    .attr("height", '100%')
-    .attr('viewBox','0 0 '+Math.min(width,height)+' '+Math.min(width,height))
-    .attr('preserveAspectRatio','xMinYMin')
-    .append("g")
-    .attr("transform", "translate(" + Math.min(width,height) / 2 + "," + Math.min(width,height) / 2 + ")");
-  */
+  // Add a axis line for x and y in the svg to get better understanding of the coordinates
+  svg.append('line').attr('x1', 0).attr('y1', 200).attr('x2', 400).attr('y2', 200).attr('stroke', 'black')
+  svg.append('line').attr('x1', 200).attr('y1', 0).attr('x2', 200).attr('y2', 400).attr('stroke', 'black')
+  // Add a circle in the center of the svg to get better understanding of the coordinates
+  svg.append('circle').attr('cx', 200).attr('cy', 200).attr('r', 5).attr('fill', 'red')
 
   const svgWidth = svg.node().getBoundingClientRect().width
   const svgHeight = svg.node().getBoundingClientRect().height
@@ -199,13 +210,13 @@ broadcast location data to all connected clients.
     .scale(Math.min(svgWidth, svgHeight) / 2 - 100)
     .clipAngle(90)
     .rotate([30, 0]) // Rotate the earth by -30 degrees
-    .translate([svgWidth / 2, svgHeight / 2])
+    .translate([(svgWidth / 2) + 50,( svgHeight / 2) + 50])
 
   // Create a light light blue circle behind the earth.
   const backgroundCircle = svg
     .append('circle')
-    .attr('cx', svgWidth / 2)
-    .attr('cy', svgHeight / 2 + 0)
+    .attr('cx', (svgWidth / 2) + 50)
+    .attr('cy', (svgHeight / 2) + 50)
     .attr('r', projection.scale())
     .attr('fill', '#E0F7FA') // Ocean color
 
@@ -230,38 +241,24 @@ broadcast location data to all connected clients.
       .append('title')
       .text((d) => d.properties.name)
 
-    // Add a button to the SVG svg-container.
-    // const button = svg
-    //   .append('foreignObject')
-    //   .attr('x', width - 150)
-    //   .attr('y', 20)
-    //   .attr('width', 130)
-    //   .attr('height', 40)
-    //   .append('xhtml:div')
-    //   .append('button')
-    //   .attr('id', 'svg-share-location')
-    //   .style('width', '100%')
-    //   .style('height', '100%')
-    //   .text('Add Location')
-
     // Add event listener to the new button.
     const shareLocationBtn = document
       .querySelector('#svg-share-location')
-      shareLocationBtn.addEventListener('click', handleLocationShare)
-      shareLocationBtn.addEventListener('touchstart', handleLocationShare)
+    shareLocationBtn.addEventListener('click', handleLocationShare)
+    shareLocationBtn.addEventListener('touchstart', handleLocationShare)
 
     function handleLocationShare() {
-        // prompt browser for location data
-        navigator.geolocation.getCurrentPosition((position) => {
-          const { latitude, longitude } = position.coords
-          const location = [longitude, latitude]
-          coordinates.push(location)
-          // addDot(location) // The location will be double added because the server will also send it back to us
+      // prompt browser for location data
+      navigator.geolocation.getCurrentPosition((position) => {
+        const { latitude, longitude } = position.coords
+        const location = [longitude, latitude]
+        coordinates.push(location)
+        // addDot(location) // The location will be double added because the server will also send it back to us
 
-          // Send the new location to the server
-          socket.emit('newLocation', location)
-        })
-      }
+        // Send the new location to the server
+        socket.emit('newLocation', location)
+      })
+    }
 
     const coordinates = []
 
