@@ -17,6 +17,9 @@ broadcast location data to all connected clients.
 <!DOCTYPE html>
 
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Geographic Pin Map</title>
   <style>
     body {
       font-family: 'Arial', sans-serif;
@@ -62,6 +65,24 @@ broadcast location data to all connected clients.
       color: white;
       text-align: center;
       margin-top: 20px;
+    }
+
+    @media (max-width: 900px) {
+      #geographic-pin-map #svg-container {
+        height: 200px;
+      }
+
+      #geographic-pin-map svg {
+        height: 200px;
+      }
+
+      #geographic-pin-map h1 {
+        font-size: 1.5em;
+      }
+
+      #geographic-pin-map .subCaption {
+        font-size: 0.9em;
+      }
     }
   </style>
 </head>
