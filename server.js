@@ -9,8 +9,8 @@ const server = http.createServer(app);
 const io = socketIo(server,
     {
         cors: {
-            // origin: "https://geographic-pin-map.vercel.app",
-            origin: "localhost:5500",
+            origin: "https://notch-marble-garlic.glitch.me/",
+            // origin: "localhost:5500",
             methods: ["GET", "POST"]
         }
     }
