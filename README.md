@@ -33,7 +33,12 @@ Somewhere between simple to complex, my project follows a few specific steps but
 - Figure out how to rotate it. 
 - Add button to add location to the map.
 
-When the map if done and deployed... I'll add an iframe right here, so you can try it from this README!
+View the live deployment here
+
+> https://notch-marble-garlic.glitch.me/
+
+
+<video src="demo-video.mp4"></video>
 
 ---
 
