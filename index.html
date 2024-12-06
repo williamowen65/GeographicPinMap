@@ -90,6 +90,9 @@ broadcast location data to all connected clients.
   // Importing the D3.js library from a CDN and the Socket.io client library
   import * as d3 from 'https://cdn.jsdelivr.net/npm/d3@7/+esm'
   import { io } from "https://cdn.socket.io/4.8.1/socket.io.esm.min.js";
+  
+  import dotenv from 'dotenv'
+  dotenv.config();
 
   // Get the width and height of the svg-container
   const svgContainer = d3.select('#svg-container')
@@ -103,8 +106,12 @@ broadcast location data to all connected clients.
   // Production and development endpoints for the Socket.io server
   // It would be nice to automatically switch between these based on the environment
 
-  const socket = io("https://notch-marble-garlic.glitch.me/")
-  // const socket = io("localhost:5500")
+  let socket;
+  if(process.env == "production"){
+    socket = io("https://notch-marble-garlic.glitch.me/")
+  } else {
+    socket = io("localhost:5500")
+  }
 
   // Array to hold the dots that represent the locations
   const dots = []
