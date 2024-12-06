@@ -73,8 +73,7 @@ broadcast location data to all connected clients.
   <!-- The rotating Earth will be injected here by D3.js -->
   <div id="svg-container"></div>
   <div class="subCaption">
-    There are <span class="viewerCount"></span> people viewing this page and <span class="locationCount"></span> have
-    shared their locations
+ 
   </div>
 </div>
 
@@ -323,22 +322,27 @@ broadcast location data to all connected clients.
   })
 
   function updateCaption() {
-    console.log('updateCaption', { viewerCount, locationCount })
+    logIf.updateCaption && console.log('updateCaption', { viewerCount, locationCount })
 
-    const viewerCountSpan = document.querySelector('.viewerCount')
-    const locationCountSpan = document.querySelector('.locationCount')
-
-    if (viewerCountSpan) {
-      viewerCountSpan.textContent = viewerCount
+    // get subCaption
+    const subtextCaption = document.querySelector('.subCaption')
+    if(subtextCaption){
+      subtextCaption.text(
+        `There ${viewerCount === 1 ? 'is' : 'are'} ${viewerCount} ${viewerCount === 1 ? 'person' : 'people'} viewing this page and ${locationCount} ${locationCount === 1 ? 'has' : 'have'} shared their ${locationCount === 1 ? 'location' : 'locations'}`
+      )
     }
-    if (locationCountSpan) {
-      locationCountSpan.textContent = locationCount
-    }
+    
 
-    // if(subtextCaption){
-    //   subtextCaption.text(
-    //     `There are ${viewerCount} people viewing this page and ${locationCount} have shared their locations`
-    //   )
+
+    // const viewerCountSpan = document.querySelector('.viewerCount')
+    // const locationCountSpan = document.querySelector('.locationCount')
+
+    // if (viewerCountSpan) {
+    //   viewerCountSpan.textContent = viewerCount
     // }
+    // if (locationCountSpan) {
+    //   locationCountSpan.textContent = locationCount
+    // }
+
   }
 </script>
