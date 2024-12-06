@@ -67,23 +67,6 @@ broadcast location data to all connected clients.
       margin-top: 20px;
     }
 
-    @media (max-width: 900px) {
-      #geographic-pin-map #svg-container {
-        height: 200px;
-      }
-
-      #geographic-pin-map svg {
-        height: 200px;
-      }
-
-      #geographic-pin-map h1 {
-        font-size: 1.5em;
-      }
-
-      #geographic-pin-map .subCaption {
-        font-size: 0.9em;
-      }
-    }
   </style>
 </head>
 <div id="geographic-pin-map">
@@ -218,7 +201,6 @@ broadcast location data to all connected clients.
     .append('svg')
     // .attr('width', '50%')
     .attr('viewBox', '150 150 100 100')
-
 
   // Add a axis line for x and y in the svg to get better understanding of the coordinates
   svg.append('line').attr('x1', 0).attr('y1', 200).attr('x2', 400).attr('y2', 200).attr('stroke', 'black')
