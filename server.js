@@ -9,13 +9,14 @@ const server = http.createServer(app);
 const io = socketIo(server,
     {
         cors: {
-            origin: "https://geographic-pin-map.vercel.app",
+            // origin: "https://geographic-pin-map.vercel.app",
+            origin: "localhost:5500",
             methods: ["GET", "POST"]
         }
     }
 );
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5500;
 
 // Enable CORS
 app.use(cors());
@@ -60,7 +61,10 @@ io.on('connection', (socket) => {
     });
 });
 
-server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+server.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+    console.log(`URL: http://localhost:${PORT}`);
+});
 
 
 app.get('/', (req, res) => {

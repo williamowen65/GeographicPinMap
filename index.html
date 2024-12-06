@@ -1,3 +1,19 @@
+<!-- 
+
+Geographic Pin Map with D3.js and Socket.io
+Share your location and see a pin on a rotating globe.
+
+Author: William Owen
+Date: 2024-12-06
+CPTC Course: JavaScript
+
+This projects is served from a Glitch server. 
+The server is a Node.js server that uses Socket.io to 
+broadcast location data to all connected clients. 
+
+-->
+
+
 <!DOCTYPE html>
 <head>
   <style>
@@ -43,8 +59,9 @@
 <div id="geographic-pin-map">
   <header>
     <h1>Geographic Pin Map</h1>
-    <button id="svg-share-location">Add Location</button>
+    <button id="svg-share-location" type="button">Add Location</button>
   </header>
+  <!-- The rotating Earth will be injected here by D3.js -->
   <div id="svg-container"></div>
   <div class="subCaption">
     There are <span class="viewerCount"></span> people viewing this page and <span class="locationCount"></span> have
@@ -63,7 +80,8 @@
 
   let subtextCaption
 
-  const socket = io("https://geographic-pin-map.vercel.app")
+  // const socket = io("https://geographic-pin-map.vercel.app")
+  const socket = io("localhost:5500")
   const dots = []
   function addDot(coordinates) {
     // Project the coordinates.
@@ -227,9 +245,12 @@
     //   .text('Add Location')
 
     // Add event listener to the new button.
-    document
+    const shareLocationBtn = document
       .querySelector('#svg-share-location')
-      .addEventListener('click', () => {
+      shareLocationBtn.addEventListener('click', handleLocationShare)
+      shareLocationBtn.addEventListener('touchstart', handleLocationShare)
+
+    function handleLocationShare() {
         // prompt browser for location data
         navigator.geolocation.getCurrentPosition((position) => {
           const { latitude, longitude } = position.coords
@@ -240,7 +261,7 @@
           // Send the new location to the server
           socket.emit('newLocation', location)
         })
-      })
+      }
 
     const coordinates = []
 

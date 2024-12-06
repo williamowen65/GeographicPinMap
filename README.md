@@ -45,6 +45,5 @@ Notes on progress:
 > And also the Express library is used to serve content.   
  
 
-<iframe src="https://geographic-pin-map.vercel.app/" width="600" height="700"></iframe>
 
 
