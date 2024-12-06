@@ -7,12 +7,14 @@ const cors = require('cors');
   
 require('dotenv').config();
 
+
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server,
     {
         cors: {
-            origin: process.env == "production" ? "https://map-socket-io.herokuapp.com" : "http://localhost:5500",
+            origin: process.env.ENV === 'production' ? "https://notch-marble-garlic.glitch.me/" : "http://localhost:5500",
+            // origin: "localhost:5500",
             methods: ["GET", "POST"]
         }
     }
