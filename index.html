@@ -236,7 +236,7 @@ broadcast location data to all connected clients.
       .attr('d', path)
       .attr('fill', '#ADD8E6') // Land color
       .attr('stroke', '#0000FF') // Border color
-      .attr('stroke-width', 1)
+      .attr('stroke-width', 0.1)
       // Add country names
       .append('title')
       .text((d) => d.properties.name)
@@ -283,7 +283,7 @@ broadcast location data to all connected clients.
           projection.clipAngle() * (Math.PI / 180) >
           d3.geoDistance(
             coordinates,
-            projection.invert([svgWidth / 2, svgHeight / 2])
+            projection.invert([(svgWidth / 2) + 50, (svgHeight / 2) + 50])
           )
         dot
           .attr('cx', newX)
