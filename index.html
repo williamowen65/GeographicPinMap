@@ -86,6 +86,7 @@ broadcast location data to all connected clients.
     updateViewerCount: false,
     addingLocation: false,
     removingLocation: false,
+    updateCaption: true
   }
 
   // Importing the D3.js library from a CDN and the Socket.io client library
@@ -173,6 +174,7 @@ broadcast location data to all connected clients.
     updateCaption()
   })
 
+  // Handle removed locations broadcasted by the server
   socket.on('removeLocation', (location) => {
    logIf.removingLocation && console.log('Removing a location because the server told us to', {
       location,
@@ -188,9 +190,6 @@ broadcast location data to all connected clients.
       updateCaption()
     }
   })
-
-  
-
 
   // Create the SVG svg-container and append it to the svg-container div.
   const svg = d3
@@ -265,14 +264,13 @@ broadcast location data to all connected clients.
       })
     }
 
+    // Array to hold the coordinates of the locations that are shared
     const coordinates = []
-
     coordinates.forEach(addDot)
 
-    // Set up rotation parameters.
-    let rotate = [0, 0]
     const velocity = 0.4
     // Set the initial rotation to match the natural angle of the earth.
+    let rotate = [0, -30]
     // projection.rotate([0, -30])
 
     // Function to update the rotation.
@@ -300,51 +298,19 @@ broadcast location data to all connected clients.
 
     // Start the rotation.
     updateRotation()
-
-    // Add text above the earth
-    // svg
-    //   .append('text')
-    //   .attr('x', width / 2)
-    //   .attr('y', 40)
-    //   .attr('text-anchor', 'middle')
-    //   .attr('font-size', '24px')
-    //   .attr('fill', 'white')
-    //   .text('Geographic Pin Map')
-
-    // // Add text below the earth
-    // subtextCaption = svg
-    //   .append('text')
-    //   .attr('x', width / 2)
-    //   .attr('y', height - 20)
-    //   .attr('text-anchor', 'middle')
-    //   .attr('font-size', '16px')
-    //   .attr('fill', 'white')
-
     updateCaption()
   })
 
   function updateCaption() {
     logIf.updateCaption && console.log('updateCaption', { viewerCount, locationCount })
 
+
     // get subCaption
     const subtextCaption = document.querySelector('.subCaption')
     if(subtextCaption){
-      subtextCaption.text(
+      subtextCaption.innerText = (
         `There ${viewerCount === 1 ? 'is' : 'are'} ${viewerCount} ${viewerCount === 1 ? 'person' : 'people'} viewing this page and ${locationCount} ${locationCount === 1 ? 'has' : 'have'} shared their ${locationCount === 1 ? 'location' : 'locations'}`
       )
     }
-    
-
-
-    // const viewerCountSpan = document.querySelector('.viewerCount')
-    // const locationCountSpan = document.querySelector('.locationCount')
-
-    // if (viewerCountSpan) {
-    //   viewerCountSpan.textContent = viewerCount
-    // }
-    // if (locationCountSpan) {
-    //   locationCountSpan.textContent = locationCount
-    // }
-
   }
 </script>
