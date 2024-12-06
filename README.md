@@ -38,7 +38,7 @@ View the live deployment here
 > https://notch-marble-garlic.glitch.me/
 
 
-<video src="demo-video.mp4"></video>
+<img src="./demo-gif.gif">
 
 ---
 
