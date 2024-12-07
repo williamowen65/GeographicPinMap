@@ -84,3 +84,6 @@ app.get('/', (req, res) => {
 });
 
 
+// Serve assets files from the 'assets' directory
+app.use('/assets', express.static(path.join(__dirname, 'assets')));
+

@@ -13,12 +13,11 @@ broadcast location data to all connected clients.
 
 -->
 
-
 <!DOCTYPE html>
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Geographic Pin Map</title>
   <style>
     body {
@@ -27,13 +26,21 @@ broadcast location data to all connected clients.
       padding: 0;
       background-color: rgb(13 13 64);
     }
+    #geographic-pin-map {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    #geographic-pin-map footer {
+      align-self: flex-end;
+    }
 
     #geographic-pin-map #svg-container {
       display: flex;
       justify-content: center;
       align-items: center;
       margin-top: 20px;
-      ;
       height: 300px;
       /* height: 100vh; Full viewport height */
     }
@@ -61,27 +68,58 @@ broadcast location data to all connected clients.
       align-items: center;
     }
 
-    #geographic-pin-map .subCaption {
+    #geographic-pin-map .subCaption,
+    #geographic-pin-map footer {
       color: white;
       text-align: center;
-      margin-top: 20px;
+      margin-top: auto;
+      margin-bottom: 10px;
     }
 
+    #geographic-pin-map footer {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #geographic-pin-map footer a {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    
+    #geographic-pin-map footer a:hover {
+      color: rgb(133, 139, 226);
+    }
+
+    #geographic-pin-map footer a img {
+      margin-left: 10px;
+    }
   </style>
 </head>
-<div id="geographic-pin-map">
-  <header>
-    <h1>Geographic Pin Map</h1>
-    <button id="svg-share-location" type="button">Add Location</button>
-  </header>
-  <!-- The rotating Earth will be injected here by D3.js -->
-  <div id="svg-container"></div>
-  <div class="subCaption">
- 
+<body>
+  <div id="geographic-pin-map">
+    <header>
+      <h1>Geographic Pin Map</h1>
+      <button id="svg-share-location" type="button">Add Location</button>
+    </header>
+    <!-- The rotating Earth will be injected here by D3.js -->
+    <div id="svg-container"></div>
+    <div class="subCaption"></div>
+    <footer style="">
+      <a href="https://github.com/williamowen65/GeographicPinMap">
+        Created by William Owen
+        <img src="assets/github-mark-white.png" style="width: 26px" />
+      </a>
+    </footer>
   </div>
-</div>
-
-
+</body>
 
 <script type="module">
   const logIf = {
@@ -90,35 +128,36 @@ broadcast location data to all connected clients.
     updateViewerCount: false,
     addingLocation: false,
     removingLocation: false,
-    updateCaption: true
+    updateCaption: true,
   }
 
   // Importing the D3.js library from a CDN and the Socket.io client library
   import * as d3 from 'https://cdn.jsdelivr.net/npm/d3@7/+esm'
-  import { io } from "https://cdn.socket.io/4.8.1/socket.io.esm.min.js";
+  import { io } from 'https://cdn.socket.io/4.8.1/socket.io.esm.min.js'
 
   // Get the width and height of the svg-container
   const svgContainer = d3.select('#svg-container')
   const width = svgContainer.node().getBoundingClientRect().width
   const height = svgContainer.node().getBoundingClientRect().height
-  logIf.size && console.log("The dimensions of the svg-container are:", { width, height })
+  logIf.size &&
+    console.log('The dimensions of the svg-container are:', { width, height })
 
   // Variable to hold the subtext caption
-  let subtextCaption;
+  let subtextCaption
 
   // Production and development endpoints for the Socket.io server
   // It would be nice to automatically switch between these based on the environment
 
-  let socket;
-  if (window.location.hostname === "notch-marble-garlic.glitch.me") {
-    socket = io("https://notch-marble-garlic.glitch.me/");
+  let socket
+  if (window.location.hostname === 'notch-marble-garlic.glitch.me') {
+    socket = io('https://notch-marble-garlic.glitch.me/')
   } else {
-    socket = io("http://localhost:5500");
+    socket = io('http://localhost:5500')
   }
 
   // Array to hold the dots that represent the locations
   const dots = []
-  // Function to add a dot to the map (Called via socket.io broadcast) 
+  // Function to add a dot to the map (Called via socket.io broadcast)
   function addDot(coordinates) {
     // Project the coordinates.
     const [x, y] = projection(coordinates)
@@ -150,7 +189,6 @@ broadcast location data to all connected clients.
   let viewerCount = 0
   let locationCount = 0
 
-
   // Listening for websocket broadcast events
   // Handle initial locations from the server
   socket.on('initialLocations', (locations) => {
@@ -172,7 +210,8 @@ broadcast location data to all connected clients.
 
   // Handle new locations broadcasted by the server
   socket.on('broadcastLocation', (location) => {
-    logIf.addingLocation && console.log('Adding a location from socket.io', { location })
+    logIf.addingLocation &&
+      console.log('Adding a location from socket.io', { location })
     addDot(location)
     locationCount++
     updateCaption()
@@ -180,9 +219,10 @@ broadcast location data to all connected clients.
 
   // Handle removed locations broadcasted by the server
   socket.on('removeLocation', (location) => {
-   logIf.removingLocation && console.log('Removing a location because the server told us to', {
-      location,
-    })
+    logIf.removingLocation &&
+      console.log('Removing a location because the server told us to', {
+        location,
+      })
     const index = dots.findIndex(
       (dot) =>
         dot.coordinates[0] === location[0] && dot.coordinates[1] === location[1]
@@ -190,7 +230,7 @@ broadcast location data to all connected clients.
     if (index > -1) {
       dots[index].dot.remove()
       dots.splice(index, 1)
-      locationCount--;
+      locationCount--
       updateCaption()
     }
   })
@@ -203,10 +243,27 @@ broadcast location data to all connected clients.
     .attr('viewBox', '150 150 100 100')
 
   // Add a axis line for x and y in the svg to get better understanding of the coordinates
-  svg.append('line').attr('x1', 0).attr('y1', 200).attr('x2', 400).attr('y2', 200).attr('stroke', 'black')
-  svg.append('line').attr('x1', 200).attr('y1', 0).attr('x2', 200).attr('y2', 400).attr('stroke', 'black')
+  svg
+    .append('line')
+    .attr('x1', 0)
+    .attr('y1', 200)
+    .attr('x2', 400)
+    .attr('y2', 200)
+    .attr('stroke', 'black')
+  svg
+    .append('line')
+    .attr('x1', 200)
+    .attr('y1', 0)
+    .attr('x2', 200)
+    .attr('y2', 400)
+    .attr('stroke', 'black')
   // Add a circle in the center of the svg to get better understanding of the coordinates
-  svg.append('circle').attr('cx', 200).attr('cy', 200).attr('r', 5).attr('fill', 'red')
+  svg
+    .append('circle')
+    .attr('cx', 200)
+    .attr('cy', 200)
+    .attr('r', 5)
+    .attr('fill', 'red')
 
   const svgWidth = svg.node().getBoundingClientRect().width
   const svgHeight = svg.node().getBoundingClientRect().height
@@ -217,13 +274,13 @@ broadcast location data to all connected clients.
     .scale(Math.min(svgWidth, svgHeight) / 2 - 100)
     .clipAngle(90)
     .rotate([30, 0]) // Rotate the earth by -30 degrees
-    .translate([(svgWidth / 2) + 50,( svgHeight / 2) + 50])
+    .translate([svgWidth / 2 + 50, svgHeight / 2 + 50])
 
   // Create a light light blue circle behind the earth.
   const backgroundCircle = svg
     .append('circle')
-    .attr('cx', (svgWidth / 2) + 50)
-    .attr('cy', (svgHeight / 2) + 50)
+    .attr('cx', svgWidth / 2 + 50)
+    .attr('cy', svgHeight / 2 + 50)
     .attr('r', projection.scale())
     .attr('fill', '#E0F7FA') // Ocean color
 
@@ -249,8 +306,7 @@ broadcast location data to all connected clients.
       .text((d) => d.properties.name)
 
     // Add event listener to the new button.
-    const shareLocationBtn = document
-      .querySelector('#svg-share-location')
+    const shareLocationBtn = document.querySelector('#svg-share-location')
     shareLocationBtn.addEventListener('click', handleLocationShare)
     shareLocationBtn.addEventListener('touchstart', handleLocationShare)
 
@@ -289,7 +345,7 @@ broadcast location data to all connected clients.
           projection.clipAngle() * (Math.PI / 180) >
           d3.geoDistance(
             coordinates,
-            projection.invert([(svgWidth / 2) + 50, (svgHeight / 2) + 50])
+            projection.invert([svgWidth / 2 + 50, svgHeight / 2 + 50])
           )
         dot
           .attr('cx', newX)
@@ -305,15 +361,19 @@ broadcast location data to all connected clients.
   })
 
   function updateCaption() {
-    logIf.updateCaption && console.log('updateCaption', { viewerCount, locationCount })
-
+    logIf.updateCaption &&
+      console.log('updateCaption', { viewerCount, locationCount })
 
     // get subCaption
     const subtextCaption = document.querySelector('.subCaption')
-    if(subtextCaption){
-      subtextCaption.innerText = (
-        `There ${viewerCount === 1 ? 'is' : 'are'} ${viewerCount} ${viewerCount === 1 ? 'person' : 'people'} viewing this page and ${locationCount} ${locationCount === 1 ? 'has' : 'have'} shared their ${locationCount === 1 ? 'location' : 'locations'}`
-      )
+    if (subtextCaption) {
+      subtextCaption.innerText = `There ${
+        viewerCount === 1 ? 'is' : 'are'
+      } ${viewerCount} ${
+        viewerCount === 1 ? 'person' : 'people'
+      } viewing this page and ${locationCount} ${
+        locationCount === 1 ? 'has' : 'have'
+      } shared their ${locationCount === 1 ? 'location' : 'locations'}`
     }
   }
 </script>

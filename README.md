@@ -5,7 +5,7 @@ View the live deployment here
 > https://notch-marble-garlic.glitch.me/
 
 
-<img src="./demo-gif.gif">
+<img src="./assets/demo-gif.gif" alt="Demo of project gif">
 
 This project is meant to demonstrate my skills with 3rd party libraries. 
 In order to do this and meet my goals of pushing myself to create something new, I created a Geographic Pin Map.
