@@ -1,76 +1,49 @@
 # Geographic Pin Map
 
-View the live deployment here
+## Live Deployment
+[Click here to view the app](https://notch-marble-garlic.glitch.me/)
 
-> https://notch-marble-garlic.glitch.me/
-
-
+## Video Demo
 <img src="./assets/demo-gif.gif" alt="Demo of project gif">
 
-This project is meant to demonstrate my skills with 3rd party libraries. 
-In order to do this and meet my goals of pushing myself to create something new, I created a Geographic Pin Map.
-
-We've all seen the pin maps before at gas stations 
+## Project Overview
+This project demonstrates my skills with **third-party libraries** by creating a **Geographic Pin Map**. The inspiration comes from traditional pin maps seen at gas stations, but with a modern, interactive approach.
 <img src="https://cdn-haccf.nitrocdn.com/YObyvryzdImjKKudBftGrMrahQVEBpfb/assets/images/optimized/rev-a694fa1/www.mapize.com/wp-content/uploads/2023/07/mackenzie-cruz-L1G-OvEyoVY-unsplash.jpg" alt="Geographic Pin Map" style="max-width: 600px; width: 100%">
 
+I chose **D3.js** for data visualization due to its vast capabilities and high level of control. This library allows for the creation of everything from simple graphs to complex, dynamic maps.
 
---- 
-D3.js data visualization has been a favorite of mine because the library is so vast and level of control provided from the api is impressive especially given the complexity of the data visualizations. The library can be used for all sorts of graphs and charts ranging from "simple" to "complex."
+## Features
+- Uses **D3.js** to render a dynamic map of the Earth.
+- Allows users to **add pins** by providing their location.
+- Implements a **WebSocket server** using **Express.js** and **Socket.io** to synchronize pins in real time.
+- Hosted on **Glitch**, a platform well-suited for projects requiring both a frontend and a backend.
 
-[D3.js website](https://d3js.org/)
+## Development Plan
+### 1. Implementing the D3.js Map
+- Locate the geographic data: [World GeoJSON dataset](https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson).
+- Define a **projection** for mapping coordinates onto the globe.
+- Add the map to the **DOM** using D3.js.
 
-I'm going to use D3.js to build an Earth. As a user you can give the map your location and add a pin.  
+### 2. Setting Up the WebSocket Server
+- Use **Express.js** to serve the frontend.
+- Implement **Socket.io** to handle real-time communication between users.
 
+### 3. Deploying the Project
+- Encountered deployment challenges:
+  - **Netlify and GitHub Pages** were not viable as they only support static sites.
+  - **Vercel** had issues with WebSockets.
+  - **Heroku** deployed successfully but lacks WebSocket support.
+- **Glitch** turned out to be the best option, offering an easy and flexible deployment environment.
 
-
-<fieldset>
-<legend><h3 style="translate: 0px -1px; margin: 0 5px;">D3 Steps include: ... </h3> </legend>
-<ul>
-  <li>Locate the location data JSON <br>(Copilot found this for me! --> <a href="https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson">https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson</a>)
- 
-  </li>
-  <li>Define a projection for your map
-    <ul>
-      <li>This is a function which can take coordinates and plot them on the map</li>
-      <li>D3 is very flexible and can handle many different styles of maps</li>
-    </ul>
-  </li>
-  <li>Add the map to the DOM</li>
-</ul>
-</fieldset>
+## Future Enhancements
+- Encapsulate the functionality into a reusable **custom web component**:
+  ```html
+  <geographic-pin-map server="...server url..." />
+  ```
+- Improve UI/UX for a more interactive experience.
+- Add additional pin metadata (e.g., labels, categories, timestamps).
+- Explore alternate hosting solutions for better scalability.
 
 ---
-
-The other half of this project is the websocket server which uses express and socket.io
-
-[Express.js](https://expressjs.com/)  
-[socket.io](https://socket.io/)
-
-This enables me to use a remote server to host and serve files, while also keeping a websocket connection to browsers that are opened to this geographic map window.
-
----
-
-The challenging part of this was finding out where I can deploy this project. I couldn't deploy to some of my normal locations because they were meant for static sites (No netlify, no Github pages).   
-
-I tried deploying on Vercel but had some issues getting it working... 
-I then tried Heroku, which I got deployed, but after deployment I found out Heroku doesn't support websockets...
-
-It just so happened that I recently discovered a host called Glitch. Deployment was very easy there. And this is a host I am planning on using again in the future. 
-
-[
-Glitch: The friendly community where everyone builds the web
-](https://glitch.com/)
-
-
---- 
-
-The main thing I would want to do to improve this app is encapsulate it so it can be used in other applications with ease.
-
-```html
-<geographic-pin-map server=" ... server url ... " />
-```
-
-This could be accomplished with custom components. However it would still require deployment of a server to handle it. And it's a problem for another day.
-
-
+This project is a work in progress. Contributions and feedback are welcome!
 
