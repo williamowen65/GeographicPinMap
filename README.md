@@ -8,7 +8,7 @@
 
 ## Project Overview
 This project demonstrates my skills with **third-party libraries** by creating a **Geographic Pin Map**. The inspiration comes from traditional pin maps seen at gas stations, but with a modern, interactive approach.
-<img src="https://cdn-haccf.nitrocdn.com/YObyvryzdImjKKudBftGrMrahQVEBpfb/assets/images/optimized/rev-a694fa1/www.mapize.com/wp-content/uploads/2023/07/mackenzie-cruz-L1G-OvEyoVY-unsplash.jpg" alt="Geographic Pin Map" style="max-width: 600px; width: 100%">
+<img src="https://cdn-haccf.nitrocdn.com/YObyvryzdImjKKudBftGrMrahQVEBpfb/assets/images/optimized/rev-a694fa1/www.mapize.com/wp-content/uploads/2023/07/mackenzie-cruz-L1G-OvEyoVY-unsplash.jpg" alt="Geographic Pin Map" style="max-width: 600px;">
 
 I chose **D3.js** for data visualization due to its vast capabilities and high level of control. This library allows for the creation of everything from simple graphs to complex, dynamic maps.
 
