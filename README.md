@@ -4,7 +4,7 @@
 [Click here to view the app](https://notch-marble-garlic.glitch.me/)
 
 ## Video Demo
-<img src="./assets/demo-gif.gif" alt="Demo of project gif">
+<img src="./assets/demo-gif.gif" alt="Demo of project gif" style="max-width: 600px;">
 
 ## Project Overview
 This project demonstrates my skills with **third-party libraries** by creating a **Geographic Pin Map**. The inspiration comes from traditional pin maps seen at gas stations, but with a modern, interactive approach.
